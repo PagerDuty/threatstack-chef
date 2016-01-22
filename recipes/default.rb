@@ -67,7 +67,7 @@ execute 'stop threatstack services' do
   subscribes :run, 'file[/opt/threatstack/etc/active_rulesets.txt]', :immediately
 end
 
-file '/opt/threatstack/etc/debug_setup_command.txt'
+file '/opt/threatstack/etc/debug_setup_command.txt' do
   content cmd
   mode 0400
   owner 'root'
