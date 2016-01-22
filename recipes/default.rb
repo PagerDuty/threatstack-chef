@@ -48,7 +48,7 @@ end
 # in a ThreatStack agent install, and we want to re-run the registration
 # process when the ruleset list changes.
 file '/opt/threatstack/etc/active_rulesets.txt' do
-  content node['threatstack']['rulesets'].join("\n")
+  content node['threatstack']['rulesets'].join("\n").concat("\n")
   mode 0644
   owner 'root'
   group 'root'
@@ -65,6 +65,13 @@ execute 'stop threatstack services' do
   command '/usr/bin/cloudsight stop'
   action :nothing
   subscribes :run, 'file[/opt/threatstack/etc/active_rulesets.txt]', :immediately
+end
+
+file '/opt/threatstack/etc/debug_setup_command.txt'
+  content cmd
+  mode 0400
+  owner 'root'
+  group 'root'
 end
 
 execute 'cloudsight setup' do
