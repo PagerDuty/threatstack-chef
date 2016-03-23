@@ -19,9 +19,21 @@
 
 include_recipe "threatstack::#{node['platform_family']}" if node['threatstack']['repo_enable']
 
+if node['threatstack']['pkg_source']
+  installer_path = ::File.join(Chef::Config[:file_cache_path], 'threatstack-installer.deb')
+
+  remote_file installer_path do
+    source node['threatstack']['pkg_source']
+    checksum node['threatstack']['pkg_checksum']
+    mode 0400
+  end
+end
+
 package 'threatstack-agent' do
   version node['threatstack']['version'] if node['threatstack']['version']
+  source installer_path if node['threatstack']['pkg_source']
   action node['threatstack']['pkg_action']
+  provider Chef::Provider::Package::Dpkg if node['threatstack']['pkg_source']
 end
 
 if node['threatstack']['deploy_key'].nil?
