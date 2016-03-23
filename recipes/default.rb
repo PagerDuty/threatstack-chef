@@ -21,6 +21,7 @@ include_recipe "threatstack::#{node['platform_family']}" if node['threatstack'][
 
 package 'threatstack-agent' do
   version node['threatstack']['version'] if node['threatstack']['version']
+  source node['threatstack']['pkg_source'] if node['threatstack']['pkg_source']
   action node['threatstack']['pkg_action']
 end
 

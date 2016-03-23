@@ -142,4 +142,22 @@ describe 'threatstack::default' do
       expect(chef_run).to install_package('threatstack-agent')
     end
   end
+
+  context 'custom-source' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new(
+        platform: 'redhat',
+        version: '6.6'
+      ) do |node|
+        node.set['threatstack']['deploy_key'] = 'ABCD1234'
+        node.set['threatstack']['pkg_source'] = '/tmp/foo.deb'
+      end.converge(described_recipe)
+    end
+
+    it 'installs the agent using the custom source provided' do
+      expect(chef_run).to install_package('threatstack-agent').with(
+        source: '/tmp/foo.deb'
+      )
+    end
+  end
 end
