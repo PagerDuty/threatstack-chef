@@ -19,8 +19,10 @@
 
 default['threatstack']['version'] = nil
 default['threatstack']['pkg_action'] = :install
-# Ordinarily, you would leave this unset and use the ThreatStack repo.
+# Ordinarily, you would leave the below unset and use the ThreatStack repo,
+# but if your machines can't access the Internet this is an option.
 default['threatstack']['pkg_source'] = nil
+default['threatstack']['pkg_checksum'] = nil
 # If no rulesets are specified the agent will register to the default
 # rule set, according to a comment in recipes/default.rb
 default['threatstack']['rulesets'] = []

@@ -150,13 +150,16 @@ describe 'threatstack::default' do
         version: '6.6'
       ) do |node|
         node.set['threatstack']['deploy_key'] = 'ABCD1234'
-        node.set['threatstack']['pkg_source'] = '/tmp/foo.deb'
+        node.set['threatstack']['pkg_source'] = 'https://example.com/foo.deb'
+        node.set['threatstack']['pkg_checksum'] = '1234'
       end.converge(described_recipe)
     end
 
     it 'installs the agent using the custom source provided' do
-      expect(chef_run).to install_package('threatstack-agent').with(
-        source: '/tmp/foo.deb'
+      expect(chef_run).to create_remote_file(/threatstack-installer.deb$/).with(
+        source: 'https://example.com/foo.deb',
+        checksum: '1234',
+        mode: 0400
       )
     end
   end
