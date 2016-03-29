@@ -33,6 +33,7 @@ package 'threatstack-agent' do
   version node['threatstack']['version'] if node['threatstack']['version']
   source installer_path if node['threatstack']['pkg_source']
   action node['threatstack']['pkg_action']
+  provider dpkg_provider if node['threatstack']['pkg_source']
 end
 
 if node['threatstack']['deploy_key'].nil?

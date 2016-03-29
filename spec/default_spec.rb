@@ -161,6 +161,10 @@ describe 'threatstack::default' do
         checksum: '1234',
         mode: 0400
       )
+
+      expect(chef_run).to install_package('threatstack-agent').with(
+        provider: dpkg_provider
+      )
     end
   end
 end
