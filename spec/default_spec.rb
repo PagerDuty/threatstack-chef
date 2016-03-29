@@ -163,7 +163,7 @@ describe 'threatstack::default' do
       )
 
       expect(chef_run).to install_package('threatstack-agent').with(
-        provider: dpkg_provider
+        provider: Chef::Provider::Package::Dpkg
       )
     end
   end
