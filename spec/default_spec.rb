@@ -142,4 +142,51 @@ describe 'threatstack::default' do
       expect(chef_run).to install_package('threatstack-agent')
     end
   end
+
+  context 'custom-source' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new(
+        platform: 'redhat',
+        version: '6.6'
+      ) do |node|
+        node.set['threatstack']['deploy_key'] = 'ABCD1234'
+        node.set['threatstack']['pkg_source'] = 'https://example.com/foo.deb'
+        node.set['threatstack']['pkg_checksum'] = '1234'
+      end.converge(described_recipe)
+    end
+
+    it 'installs the agent using the custom source provided' do
+      expect(chef_run).to create_remote_file(/threatstack-installer.deb$/).with(
+        source: 'https://example.com/foo.deb',
+        checksum: '1234',
+        mode: 0400
+      )
+
+      expect(chef_run).to install_package('threatstack-agent').with(
+        provider: Chef::Provider::Package::Dpkg
+      )
+    end
+  end
+
+  context 'uninstall-test' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new do |node|
+        node.set['threatstack']['pkg_action'] = :remove
+      end.converge(described_recipe)
+    end
+
+    before do
+      contents = { 'deploy_key' => 'ABCD1234' }
+      allow(Chef::EncryptedDataBagItem).to receive(:load).with('threatstack', 'api_keys').and_return(contents)
+    end
+
+    it 'uninstalls the package' do
+      expect(chef_run).to remove_package('threatstack-agent')
+    end
+
+    it 'does not run unnecessary actions' do
+      expect(chef_run).to_not create_file('/opt/threatstack/etc/active_rulesets.txt')
+      expect(chef_run).to_not run_execute('cloudsight setup')
+    end
+  end
 end
