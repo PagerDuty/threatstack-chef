@@ -25,7 +25,7 @@ package 'threatstack-agent' do
 end
 
 if node['threatstack']['deploy_key'].nil?
-  deploy_key = Chef::EncryptedDataBagItem.load(
+  deploy_key = data_bag_item(
     node['threatstack']['data_bag_name'],
     node['threatstack']['data_bag_item']
   )['deploy_key']
